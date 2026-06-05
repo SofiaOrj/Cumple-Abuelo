@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Feliz Cumpleaños Abuelo Diego</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playwrite+GB+J:ital,wght@0,200;1,200&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pink:#FF6B9D;--yellow:#FFD23F;--teal:#00C9A7;
+  --orange:#FF7A3D;--purple:#805dab;--blue:#3DAFE8;
+  --green:#06D6A0;--bg:#0d0d20;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:'Playwrite GB J';touch-action:none;user-select:none}
+
+/* ===== SCREENS ===== */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  transition:opacity .4s,transform .4s;will-change:transform,opacity}
+.screen.hidden{opacity:0;pointer-events:none;transform:scale(.96)}
+
+/* ===== CONFETTI CANVAS ===== */
+#confetti-canvas{position:absolute;inset:0;pointer-events:none;z-index:100}
+
+/* ===== SCREEN 1 — ENVELOPE ===== */
+#s1{background:var(--bg);z-index:10}
+.envelope-wrap{cursor:grab}.envelope-wrap:active{cursor:grabbing}
+.hint{color:rgba(255,255,255,.45);font-size:.9rem;margin-top:1.4rem;
+  letter-spacing:.04em;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.45}50%{opacity:.9}}
+
+/* ===== SCREEN 2 — CAKE ===== */
+#s2{background:#549266;z-index:9}
+.cake-scene{display:flex;flex-direction:column;align-items:center}
+.age-ring{color:var(--yellow);font-family:'Boogaloo',cursive;font-size:5rem;
+  line-height:1;margin-bottom:.6rem;text-shadow:0 0 30px rgba(255,210,63,.4)}
+.candles-row{display:flex;gap:12px;align-items:flex-end;margin-bottom:0;z-index:2}
+.candle{display:flex;flex-direction:column;align-items:center;position:relative}
+.flame{width:14px;height:22px;border-radius:50% 50% 30% 30%;
+  animation:flicker .5s ease-in-out infinite alternate;
+  transform-origin:bottom center;transition:opacity .3s,transform .3s;
+  margin-bottom:2px}
+@keyframes flicker{
+  0%{transform:scaleY(1) scaleX(1) rotate(-3deg)}
+  100%{transform:scaleY(.85) scaleX(1.1) rotate(3deg)}
+}
+.flame.out{opacity:0;transform:scaleY(0)}
+.candle-body{width:10px;height:32px;border-radius:3px}
+.cake-tier{display:flex;flex-direction:column;align-items:center}
+.tier-frosting{height:10px;background:#e8e4d0;border-radius:6px 6px 0 0}
+.tier-body{border-radius:0 0 6px 6px;position:relative;overflow:hidden}
+.tier-body::before{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(255,255,255,.07) 28px,rgba(255,255,255,.07) 30px)}
+.tier3{width:150px}.tier3 .tier-frosting{width:150px}.tier3 .tier-body{width:150px;height:34px;background:#c0845c}
+.tier2{width:180px}.tier2 .tier-frosting{width:180px}.tier2 .tier-body{width:180px;height:42px;background:#a06040}
+.tier1{width:210px}.tier1 .tier-frosting{width:210px}.tier1 .tier-body{width:210px;height:50px;background:#c0845c}
+.plate{width:230px;height:16px;background:#7c5c3a;border-radius:50%}
+.shake-hint{color:rgba(255,255,255,.5);font-size:.85rem;margin-top:1.4rem;
+  animation:pulse 2s ease-in-out infinite;text-align:center;padding:0 1rem;line-height:1.5}
+.blow-btn{margin-top:.8rem;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);
+  color:#fff;border-radius:50px;padding:.55rem 1.6rem;font-family:'Playwrite GB J';
+  font-size:.95rem;cursor:pointer;transition:background .2s}
+.blow-btn:hover{background:rgba(255,255,255,.2)}
+.blown-msg{color:var(--yellow);font-family:'Boogaloo',cursive;font-size:1.8rem;
+  margin-top:.8rem;opacity:0;transition:opacity .5s;text-align:center}
+.blown-msg.show{opacity:1}
+
+/* ===== SCREEN 3 — BUBBLES ===== */
+#s3{background:#0d1f2d;z-index:8}
+#bubble-field{position:absolute;inset:0}
+.bubble{position:absolute;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:700;text-align:center;padding:6px;
+  border:2px solid rgba(255,255,255,.25);
+  animation:rise linear infinite}
+@keyframes rise{
+  0%{transform:translateY(0) scale(1);opacity:.9}
+  100%{transform:translateY(-110vh) scale(.8);opacity:0}
+}
+.bubble.pop{animation:pop .3s ease-out forwards}
+@keyframes pop{
+  0%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.5);opacity:.8}
+  100%{transform:scale(.1);opacity:0}
+}
+.bubble-counter{position:absolute;top:1.5rem;font-family:'Boogaloo',cursive;
+  font-size:1.4rem;color:rgba(255,255,255,.7);z-index:2}
+.bubble-goal{font-size:.8rem;color:rgba(255,255,255,.4);margin-top:2px;text-align:center}
+
+/* ===== SCREEN 4 — MESSAGE ===== */
+#s4{background:#1a0000;z-index:7;padding:2rem 1.5rem;text-align:center}
+.msg-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:24px;padding:2rem 1.5rem;max-width:380px;width:100%}
+.msg-title{font-family:'Boogaloo',cursive;font-size:2.2rem;
+  background:linear-gradient(135deg,var(--pink),var(--yellow),var(--teal));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin-bottom:1.2rem;line-height:1.2}
+.msg-body{font-size:1.05rem;color:rgba(255,255,255,.85);line-height:1.8;
+  margin-bottom:1.5rem}
+.msg-sig{color:var(--green);font-weight:700;font-size:1rem}
+.photo-area{width:100%;max-width:300px;border-radius:16px;overflow:hidden;
+  margin:0 auto 1.4rem;border:2px solid rgba(255,255,255,.1);cursor:pointer}
+.photo-area img{width:100%;display:block}
+.photo-placeholder{padding:1.8rem;color:rgba(255,255,255,.25);font-size:.85rem;
+  display:flex;flex-direction:column;align-items:center;gap:.5rem}
+.photo-placeholder span:first-child{font-size:2.2rem}
+#photo-in{display:none}
+.replay-btn{margin-top:1.4rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);
+  color:rgba(255,255,255,.7);border-radius:50px;padding:.6rem 1.6rem;
+  font-family:'Playwrite GB J';font-size:.9rem;cursor:pointer;
+  transition:background .2s}
+.replay-btn:hover{background:rgba(255,255,255,.12)}
+
+/* ===== ENVELOPE SVG ===== */
+.env-svg{filter:drop-shadow(0 8px 24px rgba(93, 150, 229, 0.4));
+  animation:envFloat 3s ease-in-out infinite}
+@keyframes envFloat{
+  0%,100%{transform:translateY(0) rotate(-1deg)}
+  50%{transform:translateY(-12px) rotate(1deg)}
+}
+.env-title{font-family:'Boogaloo',cursive;font-size:2rem;
+  color:#fff;margin-bottom:1.6rem;text-align:center;
+  text-shadow:0 2px 12px rgba(155,150,229,.6)}
+</style>
+</head>
+<body>
+<canvas id="confetti-canvas"></canvas>
+
+<!-- ===== SCREEN 1: ENVELOPE ===== -->
+<div class="screen" id="s1">
+  <div class="env-title">Para Abuelo Diego</div>
+  <div class="envelope-wrap" id="env-wrap">
+    <svg width="240" height="160" viewBox="0 0 240 160" class="env-svg" id="env-svg">
+      <!-- envelope body -->
+      <rect x="10" y="30" width="220" height="120" rx="10" fill="#9B5DE5"/>
+      <!-- flap closed -->
+      <path id="flap" d="M10,30 L120,90 L230,30 Z" fill="#7F44CC"/>
+      <!-- bottom triangles -->
+      <path d="M10,150 L80,95 L10,30 Z" fill="#8444BB" opacity=".7"/>
+      <path d="M230,150 L160,95 L230,30 Z" fill="#8444BB" opacity=".7"/>
+      <!-- seal -->
+      <circle id="seal" cx="120" cy="80" r="18" fill="#FFD23F"/>
+      <text x="120" y="85" text-anchor="middle" font-size="18" fill="#5a3800">✉</text>
+      <!-- stars deco -->
+      <text x="40" y="55" font-size="14" fill="rgba(255,255,255,.4)">✦</text>
+      <text x="190" y="125" font-size="12" fill="rgba(255,255,255,.3)">✦</text>
+      <text x="30" y="130" font-size="10" fill="rgba(255,255,255,.25)">✦</text>
+    </svg>
+  </div>
+  <p class="hint" id="drag-hint">arrastra para arriba para abrir</p>
+</div>
+
+<!-- ===== SCREEN 2: CAKE ===== -->
+<div class="screen hidden" id="s2">
+  <div class="cake-scene">
+    <div class="age-ring">63</div>
+    <div class="candles-row" id="candles-row"></div>
+    <div class="cake-tier tier3">
+      <div class="tier-frosting"></div>
+      <div class="tier-body"></div>
+    </div>
+    <div class="cake-tier tier2">
+      <div class="tier-frosting"></div>
+      <div class="tier-body"></div>
+    </div>
+    <div class="cake-tier tier1">
+      <div class="tier-frosting"></div>
+      <div class="tier-body"></div>
+    </div>
+    <div class="plate"></div>
+    <p class="shake-hint" id="shake-hint">Sacude el teléfono<br>para soplar las velas</p>
+    <button class="blow-btn" id="blow-btn" onclick="blowAllCandles()">Soplar velas</button>
+    <p class="blown-msg" id="blown-msg">¡Pide un deseo!</p>
+  </div>
+</div>
+
+<!-- ===== SCREEN 3: BUBBLES ===== -->
+<div class="screen hidden" id="s3">
+  <div class="bubble-counter" id="bubble-counter">
+    <div id="pop-count">0 / 10 reventados</div>
+    <div class="bubble-goal">¡Revienta todos los globos para continuar!</div>
+  </div>
+  <div id="bubble-field"></div>
+</div>
+
+<!-- ===== SCREEN 4: MESSAGE ===== -->
+<div class="screen hidden" id="s4">
+  <div class="msg-card">
+    <!-- EDIT: change this title -->
+    <div class="msg-title">¡Feliz Cumpleaños,<br>Abuelo Diego!</div>
+    <input type="file" id="photo-in" accept="image/*">
+    <!-- EDIT: write your message here -->
+    <p class="msg-body" id="msg-body">
+      Hola abuelo Diego,<br>
+      ¡Feliz cumpleaños! Estoy muy agradecida de poder celebrar tus 63 años contigo. 
+      Ojalá disfrutes este día especial y que este próximo año te traiga experiencias únicas que te llenan por dentro. 
+      ¡Que cumplas muchos más!
+    </p>
+    <!-- EDIT: change the signature -->
+    <p class="msg-sig">De: Tu nieta, Sofia</p>
+    <button class="replay-btn" onclick="replay()">Volver a empezar</button>
+  </div>
+</div>
+
+<script>
+const screens = {s1:document.getElementById('s1'),s2:document.getElementById('s2'),s3:document.getElementById('s3'),s4:document.getElementById('s4')};
+let current = 's1';
+
+function goTo(id){
+  screens[current].classList.add('hidden');
+  screens[id].classList.remove('hidden');
+  current = id;
+  if(id==='s2') initCake();
+  if(id==='s3') initBubbles();
+  if(id==='s4') launchConfetti();
+}
+
+function replay(){goTo('s1');candlesBlown=false;poppedCount=0;}
+
+/* ===== ENVELOPE DRAG ===== */
+const envWrap = document.getElementById('env-wrap');
+const hint = document.getElementById('drag-hint');
+let dragStartY=null, dragging=false;
+
+function startDrag(y){dragStartY=y;dragging=true;envWrap.style.cursor='grabbing';}
+function moveDrag(y){
+  if(!dragging) return;
+  const dy = dragStartY - y;
+  const t = Math.max(0, Math.min(1, dy/140));
+  envWrap.style.transform = `translateY(${-dy*0.5}px)`;
+  envWrap.style.opacity = 1 - t*0.4;
+  document.getElementById('flap').setAttribute('transform',`rotate(${t*175},120,90)`);
+  document.getElementById('seal').style.opacity = 1-t;
+  if(dy > 140){ endDrag(); goTo('s2'); }
+}
+function endDrag(){dragging=false;dragStartY=null;envWrap.style.cursor='grab';envWrap.style.transform='';envWrap.style.opacity=1;}
+
+envWrap.addEventListener('mousedown',e=>startDrag(e.clientY));
+document.addEventListener('mousemove',e=>{if(dragging)moveDrag(e.clientY)});
+document.addEventListener('mouseup',endDrag);
+envWrap.addEventListener('touchstart',e=>{e.preventDefault();startDrag(e.touches[0].clientY)},{passive:false});
+document.addEventListener('touchmove',e=>{if(dragging){e.preventDefault();moveDrag(e.touches[0].clientY)}},{passive:false});
+document.addEventListener('touchend',endDrag);
+
+/* ===== CAKE ===== */
+const candleColors=['#FF6B9D','#FFD23F','#9B5DE5','#00C9A7','#FF7A3D','#3DAFE8'];
+const flameColors=['#FFD23F','#FF9A3D','#FF6B3D'];
+let candlesBlown=false;
+let blownCount=0;
+const CANDLE_COUNT=6;
+
+function initCake(){
+  blownCount=0; candlesBlown=false;
+  document.getElementById('blown-msg').classList.remove('show');
+  document.getElementById('shake-hint').style.opacity=1;
+  const row=document.getElementById('candles-row');
+  row.innerHTML='';
+  for(let i=0;i<CANDLE_COUNT;i++){
+    const c=document.createElement('div');
+    c.className='candle';
+    const flame=document.createElement('div');
+    flame.className='flame';
+    flame.dataset.idx=i;
+    flame.style.background=flameColors[i%flameColors.length];
+    const body=document.createElement('div');
+    body.className='candle-body';
+    body.style.cssText=`width:10px;height:32px;border-radius:3px;background:${candleColors[i%candleColors.length]}`;
+    c.appendChild(flame);
+    c.appendChild(body);
+    row.appendChild(c);
+  }
+  setupShake();
+  setupTapCandle();
+}
+
+function blowCandle(idx){
+  const flames=document.querySelectorAll('.flame');
+  if(idx<flames.length && !flames[idx].classList.contains('out')){
+    flames[idx].classList.add('out');
+    blownCount++;
+    if(blownCount>=CANDLE_COUNT && !candlesBlown){
+      candlesBlown=true;
+      document.getElementById('shake-hint').style.opacity=0;
+      document.getElementById('blown-msg').classList.add('show');
+      setTimeout(()=>goTo('s3'),2000);
+    }
+  }
+}
+
+function blowAllCandles(){
+  const flames=document.querySelectorAll('.flame');
+  let delay=0;
+  flames.forEach((_,i)=>{setTimeout(()=>blowCandle(i),delay);delay+=Math.random()*180+60;});
+}
+
+function setupTapCandle(){
+  document.getElementById('candles-row').addEventListener('click',e=>{
+    const f=e.target.closest('.flame');
+    if(f) blowCandle(parseInt(f.dataset.idx));
+  });
+}
+
+/* Shake */
+let lastAcc={x:0,y:0,z:0};
+let shakeCD=false;
+function setupShake(){
+  if(window.DeviceMotionEvent){
+    if(typeof DeviceMotionEvent.requestPermission==='function'){
+      document.getElementById('shake-hint').innerHTML='Toca aquí y luego sacude 📱';
+      document.getElementById('shake-hint').style.cursor='pointer';
+      document.getElementById('shake-hint').addEventListener('click',async ()=>{
+        const perm=await DeviceMotionEvent.requestPermission().catch(()=>'denied');
+        if(perm==='granted') listenShake();
+      },{once:true});
+    } else { listenShake(); }
+  }
+}
+function listenShake(){
+  window.addEventListener('devicemotion',e=>{
+    if(current!=='s2' || shakeCD) return;
+    const acc=e.accelerationIncludingGravity;
+    if(!acc) return;
+    const dx=Math.abs(acc.x-lastAcc.x),dy=Math.abs(acc.y-lastAcc.y),dz=Math.abs(acc.z-lastAcc.z);
+    lastAcc={x:acc.x,y:acc.y,z:acc.z};
+    if(dx+dy+dz>30){shakeCD=true;blowAllCandles();setTimeout(()=>shakeCD=false,1000);}
+  });
+}
+
+/* ===== BUBBLES ===== */
+const BUBBLE_GOAL=10;
+let poppedCount=0;
+let bubbleInterval=null;
+
+const bubbleTexts=['63','🎉', "cumple", "yay"];
+const bubbleColors=['rgba(255,107,157,.25)','rgba(155,93,229,.25)','rgba(0,201,167,.25)','rgba(255,210,63,.25)','rgba(61,175,232,.25)'];
+
+function initBubbles(){
+  poppedCount=0;
+  document.getElementById('pop-count').textContent=`0 / ${BUBBLE_GOAL} reventados`;
+  document.getElementById('bubble-field').innerHTML='';
+  if(bubbleInterval) clearInterval(bubbleInterval);
+  for(let i=0;i<8;i++) setTimeout(spawnBubble, i*300);
+  bubbleInterval=setInterval(()=>{
+    if(current==='s3' && document.querySelectorAll('.bubble:not(.pop)').length<12) spawnBubble();
+  },800);
+}
+
+function spawnBubble(){
+  if(current!=='s3') return;
+  const b=document.createElement('div');
+  b.className='bubble';
+  const size=55+Math.random()*55;
+  const x=Math.random()*(window.innerWidth-size);
+  const dur=5+Math.random()*8;
+  const delay=Math.random()*2;
+  b.style.cssText=`width:${size}px;height:${size}px;left:${x}px;bottom:-${size}px;background:${bubbleColors[Math.floor(Math.random()*bubbleColors.length)]};animation-duration:${dur}s;animation-delay:${delay}s;font-size:${Math.max(10,size/6)}px;color:rgba(255,255,255,.7)`;
+  b.textContent=bubbleTexts[Math.floor(Math.random()*bubbleTexts.length)];
+  b.addEventListener('click',()=>popBubble(b));
+  b.addEventListener('touchstart',e=>{e.preventDefault();popBubble(b);},{passive:false});
+  document.getElementById('bubble-field').appendChild(b);
+}
+
+function popBubble(b){
+  if(b.classList.contains('pop')) return;
+  b.classList.add('pop');
+  poppedCount++;
+  document.getElementById('pop-count').textContent=`${poppedCount} / ${BUBBLE_GOAL} reventados`;
+  miniConfettiBurst(b);
+  setTimeout(()=>b.remove(),300);
+  if(poppedCount>=BUBBLE_GOAL){
+    clearInterval(bubbleInterval);
+    bubbleInterval=null;
+    setTimeout(()=>goTo('s4'),600);
+  }
+}
+
+/* ===== CONFETTI ===== */
+const canvas=document.getElementById('confetti-canvas');
+const ctx=canvas.getContext('2d');
+let particles=[];
+let animating=false;
+
+function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+resizeCanvas();
+window.addEventListener('resize',resizeCanvas);
+
+const COLS=['#FF6B9D','#FFD23F','#9B5DE5','#00C9A7','#FF7A3D','#3DAFE8','#06D6A0'];
+
+function launchConfetti(){
+  for(let i=0;i<180;i++){
+    particles.push({
+      x:Math.random()*canvas.width,y:Math.random()*canvas.height-canvas.height,
+      vx:(Math.random()-.5)*3,vy:2+Math.random()*4,
+      w:6+Math.random()*8,h:4+Math.random()*6,
+      color:COLS[Math.floor(Math.random()*COLS.length)],
+      rot:Math.random()*360,spin:(Math.random()-.5)*6,
+      life:1
+    });
+  }
+  if(!animating){animating=true;animConfetti();}
+}
+
+function miniConfettiBurst(el){
+  const r=el.getBoundingClientRect();
+  for(let i=0;i<16;i++){
+    particles.push({
+      x:r.left+r.width/2,y:r.top+r.height/2,
+      vx:(Math.random()-.5)*8,vy:(Math.random()-1)*8,
+      w:5,h:5,color:COLS[Math.floor(Math.random()*COLS.length)],
+      rot:0,spin:(Math.random()-.5)*10,life:1
+    });
+  }
+  if(!animating){animating=true;animConfetti();}
+}
+
+function animConfetti(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles=particles.filter(p=>p.life>0.01);
+  for(const p of particles){
+    p.x+=p.vx; p.y+=p.vy; p.vy+=.07; p.rot+=p.spin;
+    p.life-=.007;
+    ctx.save();
+    ctx.globalAlpha=p.life;
+    ctx.translate(p.x,p.y);
+    ctx.rotate(p.rot*Math.PI/180);
+    ctx.fillStyle=p.color;
+    ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+    ctx.restore();
+  }
+  if(particles.length>0) requestAnimationFrame(animConfetti);
+  else animating=false;
+}
+
+</script>
+</body>
+</html>
